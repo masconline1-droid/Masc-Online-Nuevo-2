@@ -748,6 +748,75 @@
   .sbfoot button:hover {
     color: var(--color-error) !important;
   }
+
+  /* Modal RGPD (consentimiento de tratamiento de datos al registrarse) */
+  .rgpd-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .rgpd-modal-overlay.on { display: flex; }
+  .rgpd-modal {
+    background: var(--color-bg-card);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 560px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: floatIn 0.25s ease-out;
+  }
+  .rgpd-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--color-border-primary);
+    flex-shrink: 0;
+  }
+  .rgpd-modal-header i { font-size: 20px; color: var(--color-accent); }
+  .rgpd-modal-header h3 { font-size: 15px; font-weight: 700; color: var(--color-text-main); flex: 1; }
+  .rgpd-modal-close { background: none; border: none; cursor: pointer; color: var(--color-text-light); font-size: 18px; line-height: 1; padding: 4px; }
+  .rgpd-modal-close:hover { color: var(--color-text-main); }
+  .rgpd-modal-body {
+    padding: 18px 22px;
+    overflow-y: auto;
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--color-text-muted);
+    flex: 1;
+  }
+  .rgpd-modal-body h4 { font-size: 12.5px; font-weight: 700; color: var(--color-text-main); margin: 16px 0 6px; }
+  .rgpd-modal-body h4:first-child { margin-top: 0; }
+  .rgpd-modal-body p { margin-bottom: 8px; }
+  .rgpd-modal-body ul { margin: 6px 0 8px 18px; }
+  .rgpd-modal-body li { margin-bottom: 4px; }
+  .rgpd-modal-hint {
+    font-size: 11px;
+    color: var(--color-warning);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 22px;
+    border-top: 1px dashed var(--color-border-primary);
+    flex-shrink: 0;
+  }
+  .rgpd-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 22px;
+    border-top: 1px solid var(--color-border-primary);
+    flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
@@ -830,6 +899,12 @@
             </button>
           </div>
         </div>
+        <div class="form-group" style="margin-top: 14px;">
+          <label style="display:flex;align-items:flex-start;gap:8px;font-size:11.5px;color:var(--color-text-muted);line-height:1.5;cursor:pointer;">
+            <input type="checkbox" id="signup-rgpd-check" required onclick="return handleRgpdCheckboxClick(event)" style="margin-top:2px;cursor:pointer;flex-shrink:0;">
+            <span>He leído y acepto el <a href="#" onclick="event.preventDefault(); event.stopPropagation(); abrirModalRgpd();" style="color:var(--color-accent);font-weight:600;">tratamiento de mis datos personales conforme al RGPD</a>.</span>
+          </label>
+        </div>
         <button type="submit" class="btnacc login-submit-btn" style="margin-top: 20px; width: 100%; justify-content: center; height: 42px;">
           <span>Registrarse</span>
         </button>
@@ -849,6 +924,54 @@
       <div class="login-footer">
         <span id="login-footer-text">¿No tienes cuenta? <a href="#" onclick="toggleAuthMode('signup')">Regístrate</a></span>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="rgpd-modal-overlay" id="rgpd-modal-overlay" onclick="if(event.target===this) cerrarModalRgpd();">
+  <div class="rgpd-modal">
+    <div class="rgpd-modal-header">
+      <i class="ti ti-shield-lock"></i>
+      <h3>Política de tratamiento de datos personales (RGPD)</h3>
+      <button type="button" class="rgpd-modal-close" onclick="cerrarModalRgpd()" aria-label="Cerrar"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="rgpd-modal-body" id="rgpd-modal-body" onscroll="handleRgpdModalScroll(this)">
+      <h4>1. Responsable del tratamiento</h4>
+      <p>MASC Digital es la plataforma responsable del tratamiento de los datos personales que usted facilita al crear una cuenta y utilizar el servicio de gestión de expedientes de Medios Adecuados de Solución de Controversias (MASC). Puede ejercer sus derechos o dirigir cualquier consulta relativa a esta política escribiendo a la dirección de contacto del despacho o entidad usuaria de la plataforma que le haya dado acceso al servicio.</p>
+
+      <h4>2. Datos que se recogen</h4>
+      <p>Al registrarse se tratan, como mínimo, su nombre completo, dirección de correo electrónico y contraseña (almacenada de forma cifrada). Durante el uso de la plataforma se tratan además los datos que usted introduzca en los expedientes que gestione (datos de solicitantes, requeridos y letrados intervinientes), así como datos técnicos de acceso (fecha, hora e identificador de sesión) con fines de seguridad.</p>
+
+      <h4>3. Finalidad del tratamiento</h4>
+      <ul>
+        <li>Gestionar su cuenta de usuario y permitir el acceso a la plataforma.</li>
+        <li>Prestar el servicio de creación, tramitación y notificación certificada de expedientes de mediación MASC.</li>
+        <li>Enviarle comunicaciones operativas relacionadas con el estado de sus expedientes.</li>
+        <li>Garantizar la seguridad, trazabilidad e integridad de las actuaciones registradas en la plataforma.</li>
+      </ul>
+
+      <h4>4. Legitimación</h4>
+      <p>La base jurídica del tratamiento es su consentimiento expreso (art. 6.1.a RGPD), prestado al marcar la casilla de aceptación, así como la ejecución del contrato de prestación de servicios que se formaliza al darse de alta (art. 6.1.b RGPD).</p>
+
+      <h4>5. Destinatarios y encargados del tratamiento</h4>
+      <p>Sus datos no se ceden a terceros ajenos a la prestación del servicio, salvo obligación legal. Pueden acceder a ellos, en calidad de encargados del tratamiento y bajo contrato que garantiza su confidencialidad, los proveedores tecnológicos necesarios para el funcionamiento de la plataforma: alojamiento y base de datos, proveedor de firma electrónica y notificación certificada, y pasarela de pago para la gestión de cobros del servicio.</p>
+
+      <h4>6. Plazo de conservación</h4>
+      <p>Los datos se conservarán mientras mantenga su cuenta activa en la plataforma y, tras su baja, durante los plazos legalmente exigibles para atender eventuales responsabilidades derivadas del tratamiento (con carácter general, hasta 6 años a efectos mercantiles y fiscales, sin perjuicio de plazos superiores cuando así lo exija la normativa aplicable a los expedientes MASC).</p>
+
+      <h4>7. Sus derechos</h4>
+      <p>Puede ejercer en cualquier momento sus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad de los datos, así como retirar su consentimiento sin que ello afecte a la licitud del tratamiento previo a su retirada. Para ello puede dirigirse al responsable del tratamiento a través de los canales de contacto habilitados en la plataforma.</p>
+
+      <h4>8. Reclamación ante la autoridad de control</h4>
+      <p>Si considera que el tratamiento de sus datos personales no se ajusta a la normativa vigente, tiene derecho a presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es).</p>
+
+      <h4>9. Actualización de esta política</h4>
+      <p>Esta política puede actualizarse para adaptarse a novedades legislativas o cambios en el servicio. Se le informará de cualquier cambio sustancial antes de que surta efecto.</p>
+    </div>
+    <div class="rgpd-modal-hint" id="rgpd-modal-hint"><i class="ti ti-arrow-down"></i>Desplázate hasta el final del texto para poder aceptar.</div>
+    <div class="rgpd-modal-footer">
+      <button type="button" class="btno" onclick="cerrarModalRgpd()">Cancelar</button>
+      <button type="button" class="btnacc" id="rgpd-modal-accept-btn" disabled onclick="aceptarModalRgpd()"><i class="ti ti-circle-check"></i>He leído y acepto</button>
     </div>
   </div>
 </div>
@@ -2959,6 +3082,53 @@ function clearAlerts() {
   if (succEl) succEl.style.display = 'none';
 }
 
+// ---- Modal RGPD (consentimiento de tratamiento de datos al registrarse) ----
+var signupRgpdAccepted = false;
+
+function handleRgpdCheckboxClick(e) {
+  // Si el usuario intenta marcar la casilla sin haber aceptado antes en el modal,
+  // se revierte el marcado y se abre el modal en su lugar.
+  if (e.target.checked && !signupRgpdAccepted) {
+    e.preventDefault();
+    abrirModalRgpd();
+  }
+  return true;
+}
+
+function abrirModalRgpd() {
+  var overlay = document.getElementById('rgpd-modal-overlay');
+  var body = document.getElementById('rgpd-modal-body');
+  var hint = document.getElementById('rgpd-modal-hint');
+  var acceptBtn = document.getElementById('rgpd-modal-accept-btn');
+  if (body) body.scrollTop = 0;
+  if (hint) hint.style.display = 'flex';
+  if (acceptBtn) acceptBtn.disabled = true;
+  if (overlay) overlay.classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarModalRgpd() {
+  var overlay = document.getElementById('rgpd-modal-overlay');
+  if (overlay) overlay.classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+function handleRgpdModalScroll(el) {
+  if (el.scrollTop + el.clientHeight >= el.scrollHeight - 6) {
+    var acceptBtn = document.getElementById('rgpd-modal-accept-btn');
+    var hint = document.getElementById('rgpd-modal-hint');
+    if (acceptBtn) acceptBtn.disabled = false;
+    if (hint) hint.style.display = 'none';
+  }
+}
+
+function aceptarModalRgpd() {
+  signupRgpdAccepted = true;
+  var check = document.getElementById('signup-rgpd-check');
+  if (check) check.checked = true;
+  cerrarModalRgpd();
+}
+
 function translateError(msg) {
   if (!msg) return "Error desconocido";
   if (msg.includes("Invalid login credentials")) {
@@ -3012,7 +3182,13 @@ async function handleEmailSignUp(event) {
   var email = document.getElementById('signup-email').value;
   var password = document.getElementById('signup-password').value;
   var submitBtn = document.querySelector('#signup-form button[type="submit"]');
-  
+
+  var rgpdCheck = document.getElementById('signup-rgpd-check');
+  if (!rgpdCheck || !rgpdCheck.checked) {
+    showError('Debes leer y aceptar el tratamiento de datos personales conforme al RGPD para crear tu cuenta.');
+    return;
+  }
+
   setLoading(submitBtn, true);
   
   try {
