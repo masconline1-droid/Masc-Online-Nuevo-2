@@ -1274,7 +1274,78 @@
             <span class="pagenum" id="p-pagenum3">Página 3 de 3</span>
           </div>
         </div>
-        <div class="formfoot" style="margin-top:14px;"><button class="btno" onclick="V('revisar')"><i class="ti ti-arrow-left"></i>Volver a editar</button><button class="btnacc" onclick="enviarDocumentoPorEmail()"><i class="ti ti-send"></i>Enviar con valor probatorio</button></div>
+        <div class="formfoot" style="margin-top:14px;"><button class="btno" onclick="V('revisar')"><i class="ti ti-arrow-left"></i>Volver a editar</button><button class="btnacc" onclick="V('notificar')"><i class="ti ti-arrow-right"></i>Continuar a notificación</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="v-notificar">
+  <div class="layout"><div class="sb" id="sb13"></div>
+    <div class="main">
+      <div class="top"><div class="toptitle"><i class="ti ti-send"></i>Notificar</div><div class="topr"><i class="ti ti-bell bell"></i></div></div>
+      <div class="body">
+        <div class="back" onclick="V('vista')"><i class="ti ti-arrow-left"></i>Volver a vista previa</div>
+        <div class="stepbar"><div class="stp"><div class="stpd done"></div><span class="stpl">1 · Datos</span></div><div class="stpln" style="background:#10b981;"></div><div class="stp"><div class="stpd done"></div><span class="stpl">2 · Revisar y editar</span></div><div class="stpln" style="background:#10b981;"></div><div class="stp"><div class="stpd done"></div><span class="stpl">3 · Vista previa</span></div><div class="stpln" style="background:#10b981;"></div><div class="stp"><div class="stpd cur"></div><span class="stpl cur">4 · Notificar</span></div></div>
+        <div class="ph"><div><h1>Consentimiento, firma y pago</h1><p>Último paso antes del envío certificado. Revisa el resumen, acepta el tratamiento de datos, firma y confirma el método de pago.</p></div></div>
+
+        <div class="formwrap">
+          <div class="fcard"><div class="fnum"><div class="fnumc"><i class="ti ti-file-check" style="font-size:14px;"></i></div><div class="fnumt">Resumen del envío</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;color:var(--color-text-muted);background:var(--color-border-tertiary);padding:14px;border-radius:var(--border-radius-md);">
+              <div><strong>Expediente:</strong> <span id="n-resumen-exp">—</span></div>
+              <div><strong>Tipo de envío:</strong> <span id="n-resumen-envio">—</span></div>
+              <div><strong>Requerido:</strong> <span id="n-resumen-req">—</span></div>
+              <div><strong>Email requerido:</strong> <span id="n-resumen-req-email">—</span></div>
+              <div><strong>Letrado firmante:</strong> <span id="n-resumen-letrado">—</span></div>
+              <div><strong>Método de pago:</strong> <span id="n-resumen-pago">—</span></div>
+            </div>
+          </div>
+
+          <div class="fcard"><div class="fnum"><div class="fnumc">A</div><div class="fnumt">Consentimiento RGPD</div></div>
+            <div id="n-rgpd-box" onscroll="handleRgpdScroll(this)" style="max-height:170px;overflow-y:auto;border:1px solid var(--color-border-primary);border-radius:var(--border-radius-md);padding:14px 16px;font-size:11.5px;line-height:1.6;color:var(--color-text-muted);background:#fafbfc;">
+              <p style="margin-bottom:10px;">De conformidad con el Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y garantía de los derechos digitales, le informamos de que los datos personales de las partes intervinientes (solicitante, requerido y letrado firmante) serán tratados con la finalidad exclusiva de gestionar el presente expediente de mediación MASC, incluida su notificación certificada, en el marco del artículo 17 de la Ley Orgánica 1/2025, de 3 de enero.</p>
+              <p style="margin-bottom:10px;">La base jurídica del tratamiento es el cumplimiento del requisito de procedibilidad previsto en dicha ley y, en su caso, la ejecución de las gestiones necesarias para la resolución extrajudicial del conflicto. Los datos se conservarán durante el plazo legalmente exigido para acreditar el intento de mediación y no se cederán a terceros salvo obligación legal o al proveedor de servicios de confianza cualificado (QTSP) encargado de certificar la remisión y recepción de la notificación.</p>
+              <p style="margin-bottom:10px;">Las partes podrán ejercer sus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad dirigiéndose al despacho responsable del expediente en la dirección de correo electrónico indicada en el propio documento.</p>
+              <p style="margin-bottom:0;">Al marcar la casilla siguiente, confirmo que dispongo del consentimiento o base legítima necesaria de todas las partes para el tratamiento de sus datos con los fines aquí descritos, y que he leído íntegramente este aviso.</p>
+            </div>
+            <div id="n-rgpd-hint" style="font-size:11px;color:var(--color-warning);margin-top:8px;display:flex;align-items:center;gap:6px;"><i class="ti ti-arrow-down"></i>Desplázate hasta el final del texto para poder aceptar.</div>
+            <label style="display:flex;align-items:flex-start;gap:8px;margin-top:10px;font-size:12.5px;color:var(--color-text-main);cursor:pointer;">
+              <input type="checkbox" id="n-rgpd-check" disabled onchange="actualizarEstadoConfirmar()" style="margin-top:2px;cursor:pointer;">
+              He leído y acepto el tratamiento de datos descrito conforme al RGPD y la Ley Orgánica 1/2025.
+            </label>
+          </div>
+
+          <div class="fcard"><div class="fnum"><div class="fnumc">B</div><div class="fnumt">Firma manuscrita del letrado</div></div>
+            <p style="font-size:11px;color:var(--color-text-light);margin-bottom:10px;">Captura de firma manuscrita local, a efectos de conformidad interna del despacho. El valor probatorio de la notificación lo otorga el proveedor QTSP configurado en Ajustes, no esta firma.</p>
+            <div style="border:1px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:#fff;touch-action:none;">
+              <canvas id="n-firma-canvas" width="640" height="150" style="width:100%;height:150px;display:block;cursor:crosshair;border-radius:var(--border-radius-md);"></canvas>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+              <span id="n-firma-hint" style="font-size:11px;color:var(--color-text-light);">Firma en el recuadro con el ratón o el dedo.</span>
+              <button type="button" class="btno" onclick="borrarFirma()"><i class="ti ti-eraser"></i>Borrar firma</button>
+            </div>
+          </div>
+
+          <div class="fcard"><div class="fnum"><div class="fnumc">C</div><div class="fnumt">Pago</div></div>
+            <div style="font-size:12px;color:var(--color-text-muted);margin-bottom:12px;">Método seleccionado en el paso 1: <strong id="n-pago-metodo-lbl">—</strong></div>
+            <div id="n-pago-stripe" style="display:none;">
+              <div class="frow"><div><label class="lbl">Número de tarjeta</label><input class="inp" placeholder="4242 4242 4242 4242" inputmode="numeric"></div></div>
+              <div class="frow" style="margin-top:10px;"><div><label class="lbl">Caducidad</label><input class="inp" placeholder="MM / AA"></div><div><label class="lbl">CVC</label><input class="inp" placeholder="123" inputmode="numeric"></div></div>
+              <div style="font-size:10.5px;color:var(--color-text-light);margin-top:8px;display:flex;align-items:center;gap:6px;"><i class="ti ti-lock"></i>Formulario de ejemplo — no se procesa ningún cobro real en esta demo.</div>
+            </div>
+            <div id="n-pago-bizum" style="display:none;">
+              <div class="frow"><div><label class="lbl">Teléfono asociado a Bizum</label><input class="inp" placeholder="600 000 000" inputmode="tel"></div></div>
+              <div style="font-size:10.5px;color:var(--color-text-light);margin-top:8px;">Se enviará una solicitud de pago al número indicado. No se procesa ningún cobro real en esta demo.</div>
+            </div>
+            <div id="n-pago-transferencia" style="display:none;font-size:11.5px;color:var(--color-text-muted);line-height:1.7;background:var(--color-border-tertiary);padding:12px 14px;border-radius:var(--border-radius-md);">
+              <div><strong>IBAN:</strong> ES00 0000 0000 0000 0000 0000</div>
+              <div><strong>Beneficiario:</strong> MASC Digital, S.L.</div>
+              <div><strong>Concepto:</strong> <span id="n-pago-concepto">—</span></div>
+            </div>
+          </div>
+
+          <div class="formfoot"><button class="btno" onclick="V('vista')"><i class="ti ti-arrow-left"></i>Volver</button><button class="btnacc" id="n-btn-confirmar" disabled onclick="validarYConfirmarNotificacion()"><i class="ti ti-send"></i>Confirmar y enviar</button></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1381,7 +1452,7 @@
     <div class="main">
       <div class="top"><div class="toptitle"><i class="ti ti-users"></i>Letrados</div><div class="topr"><i class="ti ti-bell bell"></i></div></div>
       <div class="body">
-        <div class="ph"><div><h1>Letrados del despacho</h1><p>Datos profesionales que se inyectan en el bloque "Representante:" del documento.</p></div><button class="btn"><i class="ti ti-user-plus"></i>Añadir letrado</button></div>
+        <div class="ph"><div><h1>Letrados del despacho</h1><p>Datos profesionales que se inyectan en el bloque "Representante:" del documento.</p></div><button class="btn" onclick="V('perfil-colegial')"><i class="ti ti-user-plus"></i>Añadir letrado</button></div>
         <div class="card"><div class="cardh"><h3>Equipo</h3></div>
           <table><thead><tr><th>Letrado</th><th>Colegio · Nº</th><th>Datos</th><th>Estado</th></tr></thead><tbody>
             <tr><td><div style="display:flex;align-items:center;gap:9px;"><div class="ptyav" style="background:#eff6ff;color:#2563eb;">JG</div>Julia García Méndez</div></td><td>ICAM · 78.214</td><td style="font-size:10px;color:#64748b;line-height:1.4;">C/ Sierpes 65 · Sevilla<br>julia.garcia@... · 954 22 13 45</td><td><span class="bd bd-acc">Verificado</span></td></tr>
@@ -1389,6 +1460,48 @@
             <tr><td><div style="display:flex;align-items:center;gap:9px;"><div class="ptyav" style="background:#f0fdf4;color:#065f46;">AD</div>Ana Díaz Fuentes</div></td><td>ICAM · 82.337</td><td style="font-size:10px;color:#64748b;line-height:1.4;">C/ Sierpes 65 · Sevilla<br>ana.diaz@... · 954 22 13 47</td><td><span class="bd bd-acc">Verificado</span></td></tr>
             <tr><td><div style="display:flex;align-items:center;gap:9px;"><div class="ptyav" style="background:#fce7f3;color:#9d2463;">PM</div>Pablo Marín Ortega</div></td><td>ICAM · 90.118</td><td style="font-size:10px;color:#64748b;line-height:1.4;">C/ Sierpes 65 · Sevilla<br>pablo.marin@... · 954 22 13 48</td><td><span class="bd bd-acc">Verificado</span></td></tr>
           </tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="v-perfil-colegial">
+  <div class="layout"><div class="sb" id="sb14"></div>
+    <div class="main">
+      <div class="top"><div class="toptitle"><i class="ti ti-certificate"></i>Verificación de letrado</div><div class="topr"><i class="ti ti-bell bell"></i></div></div>
+      <div class="body">
+        <div class="back" onclick="V('letrados')"><i class="ti ti-arrow-left"></i>Volver a letrados</div>
+        <div class="ph"><div><h1>Añadir letrado</h1><p>Aporta los datos profesionales y el certificado de colegiación. El letrado quedará en estado "Pendiente de verificación" hasta su revisión manual por el despacho.</p></div></div>
+
+        <div class="formwrap">
+          <form id="pc-form" onsubmit="enviarVerificacionColegial(event)">
+            <div class="fcard"><div class="fnum"><div class="fnumc">1</div><div class="fnumt">Datos profesionales</div></div>
+              <div class="frow"><div><label class="lbl">Nombre y apellidos</label><input class="inp" id="pc-nombre" placeholder="Nombre completo del letrado" required></div><div><label class="lbl">Colegio de abogados</label><input class="inp" id="pc-colegio" placeholder="Ilustre Colegio de Abogados de..." required></div></div>
+              <div class="frow" style="margin-top:10px;"><div><label class="lbl">Número de colegiado</label><input class="inp" id="pc-numero" placeholder="Ej. 78.214" required></div><div><label class="lbl">Email profesional</label><input class="inp" id="pc-email" type="email" placeholder="letrado@despacho.es"></div></div>
+              <div class="frow" style="margin-top:10px;"><div><label class="lbl">Teléfono</label><input class="inp" id="pc-telefono" placeholder="954 00 00 00"></div><div><label class="lbl">Dirección del despacho</label><input class="inp" id="pc-direccion" placeholder="Calle, número, ciudad"></div></div>
+            </div>
+
+            <div class="fcard"><div class="fnum"><div class="fnumc">2</div><div class="fnumt">Certificado de colegiación</div></div>
+              <label for="pc-archivo" style="display:block;border:1.5px dashed var(--color-border-secondary);border-radius:var(--border-radius-md);padding:24px 20px;text-align:center;cursor:pointer;background:#fafbfc;">
+                <i class="ti ti-cloud-upload" style="font-size:26px;color:var(--color-text-light);"></i>
+                <p style="font-size:12px;color:var(--color-text-muted);margin-top:8px;">Sube el certificado de colegiación o habilitación (PDF o imagen)</p>
+                <span id="pc-archivo-nombre" style="font-size:10.5px;color:var(--color-text-light);display:block;margin-top:4px;">Ningún archivo seleccionado</span>
+              </label>
+              <input type="file" id="pc-archivo" accept=".pdf,image/*" style="display:none;" onchange="actualizarNombreArchivoColegial(this)">
+              <div class="colegiado" style="color:var(--color-text-light);margin-top:10px;"><i class="ti ti-info-circle"></i>La verificación del número de colegiado frente al colegio profesional correspondiente se realiza manualmente por el despacho; esta plataforma no consulta ningún registro oficial de forma automática.</div>
+            </div>
+
+            <div class="formfoot"><button type="button" class="btno" onclick="V('letrados')"><i class="ti ti-arrow-left"></i>Cancelar</button><button type="submit" class="btnacc"><i class="ti ti-send"></i>Enviar para verificación</button></div>
+          </form>
+
+          <div id="pc-status" class="fcard" style="display:none;text-align:center;">
+            <div style="width:44px;height:44px;border-radius:50%;background:var(--color-warning-light);color:var(--color-warning);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;"><i class="ti ti-clock" style="font-size:22px;"></i></div>
+            <h3 style="font-size:15px;font-weight:600;color:var(--color-text-main);margin-bottom:4px;" id="pc-status-nombre">—</h3>
+            <span class="bd bd-not">Pendiente de verificación</span>
+            <p style="font-size:11.5px;color:var(--color-text-light);margin-top:12px;">Se ha recibido la documentación. El despacho revisará el certificado y activará el acceso del letrado una vez verificado.</p>
+            <button class="btno" style="margin-top:14px;" onclick="V('letrados')"><i class="ti ti-arrow-left"></i>Volver a letrados</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1575,7 +1688,7 @@ async function enviarDocumentoPorEmail() {
   }
   
   // Mostrar estado enviando
-  var btn = document.querySelector('#v-vista .btnacc');
+  var btn = document.getElementById('n-btn-confirmar') || document.querySelector('#v-notificar .btnacc');
   var origText = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '<i class="ti ti-loader" style="animation: spin 1.2s linear infinite; display: inline-block; margin-right: 6px;"></i> Enviando...';
@@ -1708,6 +1821,145 @@ async function enviarDocumentoPorEmail() {
   V('detalle');
 }
 
+// ---- Paso 4: resumen, consentimiento RGPD, firma y pago ----
+
+function actualizarResumenNotificar(){
+  function val(id){ var el=document.getElementById(id); return el ? el.value.replace(/\s*\[Ejemplo\]/g,'') : ''; }
+  var set = function(id, text){ var el=document.getElementById(id); if(el) el.textContent = text || '—'; };
+
+  set('n-resumen-exp', val('f-exp-id'));
+  var envioPill = document.querySelector('#tipo-env .pill.sel');
+  set('n-resumen-envio', envioPill ? envioPill.textContent : '');
+  set('n-resumen-req', val('f-req-nombre'));
+  set('n-resumen-req-email', val('f-req-email'));
+
+  var letradoSel = document.getElementById('f-letrado');
+  var letradoNombre = (letradoSel && letrados[letradoSel.value]) ? letrados[letradoSel.value].nombre : '';
+  set('n-resumen-letrado', letradoNombre);
+
+  var pagoSel = document.getElementById('f-pago');
+  var metodo = pagoSel ? pagoSel.value : 'Stripe (tarjeta)';
+  set('n-resumen-pago', metodo);
+  set('n-pago-metodo-lbl', metodo);
+
+  ['n-pago-stripe','n-pago-bizum','n-pago-transferencia'].forEach(function(id){ var e=document.getElementById(id); if(e) e.style.display='none'; });
+  if (metodo.indexOf('Stripe') === 0) {
+    var e1 = document.getElementById('n-pago-stripe'); if (e1) e1.style.display='block';
+  } else if (metodo === 'Bizum') {
+    var e2 = document.getElementById('n-pago-bizum'); if (e2) e2.style.display='block';
+  } else {
+    var e3 = document.getElementById('n-pago-transferencia'); if (e3) e3.style.display='block';
+    set('n-pago-concepto', val('f-exp-id'));
+  }
+}
+
+function resetRgpdGate(){
+  var box = document.getElementById('n-rgpd-box'); if (box) box.scrollTop = 0;
+  var check = document.getElementById('n-rgpd-check'); if (check) { check.checked = false; check.disabled = true; }
+  var hint = document.getElementById('n-rgpd-hint'); if (hint) hint.style.display = 'flex';
+}
+
+function handleRgpdScroll(el){
+  if (el.scrollTop + el.clientHeight >= el.scrollHeight - 6) {
+    var check = document.getElementById('n-rgpd-check'); if (check) check.disabled = false;
+    var hint = document.getElementById('n-rgpd-hint'); if (hint) hint.style.display = 'none';
+  }
+}
+
+var firmaCtx = null, firmaDrawing = false, firmaTieneTrazos = false, firmaCanvasInit = false;
+
+function initFirmaCanvas(){
+  var canvas = document.getElementById('n-firma-canvas');
+  if (!canvas) return;
+  var rect = canvas.getBoundingClientRect();
+  if (rect.width > 0) { canvas.width = rect.width; canvas.height = rect.height; }
+  firmaCtx = canvas.getContext('2d');
+  firmaCtx.strokeStyle = '#0f172a';
+  firmaCtx.lineWidth = 2;
+  firmaCtx.lineCap = 'round';
+  firmaCtx.lineJoin = 'round';
+  firmaTieneTrazos = false;
+  var hint = document.getElementById('n-firma-hint'); if (hint) hint.textContent = 'Firma en el recuadro con el ratón o el dedo.';
+
+  if (firmaCanvasInit) return;
+  firmaCanvasInit = true;
+
+  function pos(e){
+    var r = canvas.getBoundingClientRect();
+    var cx = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+    var cy = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+    return { x: cx, y: cy };
+  }
+  function start(e){ firmaDrawing = true; var p = pos(e); firmaCtx.beginPath(); firmaCtx.moveTo(p.x, p.y); e.preventDefault(); }
+  function move(e){
+    if (!firmaDrawing) return;
+    var p = pos(e); firmaCtx.lineTo(p.x, p.y); firmaCtx.stroke();
+    firmaTieneTrazos = true;
+    var h = document.getElementById('n-firma-hint'); if (h) h.textContent = 'Firma capturada.';
+    actualizarEstadoConfirmar();
+    e.preventDefault();
+  }
+  function end(){ firmaDrawing = false; }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, { passive: false });
+  canvas.addEventListener('touchmove', move, { passive: false });
+  canvas.addEventListener('touchend', end);
+}
+
+function borrarFirma(){
+  var canvas = document.getElementById('n-firma-canvas');
+  if (!canvas || !firmaCtx) return;
+  firmaCtx.clearRect(0, 0, canvas.width, canvas.height);
+  firmaTieneTrazos = false;
+  var h = document.getElementById('n-firma-hint'); if (h) h.textContent = 'Firma en el recuadro con el ratón o el dedo.';
+  actualizarEstadoConfirmar();
+}
+
+function actualizarEstadoConfirmar(){
+  var btn = document.getElementById('n-btn-confirmar');
+  var check = document.getElementById('n-rgpd-check');
+  if (!btn) return;
+  btn.disabled = !(check && check.checked && firmaTieneTrazos);
+}
+
+function validarYConfirmarNotificacion(){
+  var check = document.getElementById('n-rgpd-check');
+  if (!check || !check.checked) { alert('Debes leer y aceptar el consentimiento RGPD antes de continuar.'); return; }
+  if (!firmaTieneTrazos) { alert('Falta la firma manuscrita del letrado antes de confirmar el envío.'); return; }
+  enviarDocumentoPorEmail();
+}
+
+// ---- Verificación de letrado (perfil colegial) ----
+
+function resetFormColegial(){
+  var form = document.getElementById('pc-form'); if (form) { form.reset(); form.style.display = 'block'; }
+  var status = document.getElementById('pc-status'); if (status) status.style.display = 'none';
+  var fname = document.getElementById('pc-archivo-nombre'); if (fname) fname.textContent = 'Ningún archivo seleccionado';
+}
+
+function actualizarNombreArchivoColegial(input){
+  var fname = document.getElementById('pc-archivo-nombre');
+  if (fname) fname.textContent = (input.files && input.files.length) ? input.files[0].name : 'Ningún archivo seleccionado';
+}
+
+function enviarVerificacionColegial(event){
+  event.preventDefault();
+  var nombre = document.getElementById('pc-nombre').value.trim();
+  var colegio = document.getElementById('pc-colegio').value.trim();
+  var numero = document.getElementById('pc-numero').value.trim();
+  var archivo = document.getElementById('pc-archivo');
+
+  if (!nombre || !colegio || !numero) { alert('Completa nombre, colegio y número de colegiado.'); return; }
+  if (!archivo.files || archivo.files.length === 0) { alert('Adjunta el certificado de colegiación o habilitación.'); return; }
+
+  var form = document.getElementById('pc-form'); if (form) form.style.display = 'none';
+  var status = document.getElementById('pc-status'); if (status) status.style.display = 'block';
+  var statusName = document.getElementById('pc-status-nombre'); if (statusName) statusName.textContent = nombre + ' — ' + colegio + ' Col. ' + numero;
+}
+
 function cargarEjemploAleatorio() {
   var escenarios = [
     {
@@ -1818,8 +2070,8 @@ function V(id){
     targetView.classList.add('on');
   }
   
-  var map={login:'login',inicio:'inicio',expedientes:'exp',nuevo:'exp',revisar:'exp',vista:'exp',detalle:'exp',letrados:'letrados',plantillas:'plantillas','plantilla-detalle':'plantillas',plazos:'plazos',facturacion:'facturacion',ajustes:'ajustes'};
-  for(var i=1;i<=12;i++){var el=document.getElementById('sb'+i); if(el) el.innerHTML=sidebar(map[id]);}
+  var map={login:'login',inicio:'inicio',expedientes:'exp',nuevo:'exp',revisar:'exp',vista:'exp',notificar:'exp',detalle:'exp',letrados:'letrados','perfil-colegial':'letrados',plantillas:'plantillas','plantilla-detalle':'plantillas',plazos:'plazos',facturacion:'facturacion',ajustes:'ajustes'};
+  for(var i=1;i<=14;i++){var el=document.getElementById('sb'+i); if(el) el.innerHTML=sidebar(map[id]);}
   
   if (id === 'nuevo') {
     var randId = "EXP-2026-" + String(Math.floor(Math.random() * 900) + 100) + " [Ejemplo]";
@@ -1858,6 +2110,15 @@ function V(id){
     if (typeof cargarAjustesResend === 'function') {
       cargarAjustesResend();
     }
+  }
+  if (id === 'notificar') {
+    if (typeof actualizarResumenNotificar === 'function') actualizarResumenNotificar();
+    if (typeof resetRgpdGate === 'function') resetRgpdGate();
+    if (typeof initFirmaCanvas === 'function') initFirmaCanvas();
+    if (typeof actualizarEstadoConfirmar === 'function') actualizarEstadoConfirmar();
+  }
+  if (id === 'perfil-colegial') {
+    if (typeof resetFormColegial === 'function') resetFormColegial();
   }
 }
 function seleccionarPill(el,groupId){ document.querySelectorAll('#'+groupId+' .pill').forEach(function(p){p.classList.remove('sel');}); el.classList.add('sel'); }
