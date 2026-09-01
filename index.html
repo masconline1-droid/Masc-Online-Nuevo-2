@@ -941,6 +941,7 @@
                 <div class="pill-group" id="tipo-env" style="margin-top: 4px;">
                   <span class="pill sel" onclick="seleccionarPill(this,'tipo-env')">BuroFax</span>
                   <span class="pill" onclick="seleccionarPill(this,'tipo-env')">BuroMail</span>
+                  <span class="pill" onclick="seleccionarPill(this,'tipo-env')">Correo postal</span>
                 </div>
               </div>
             </div>
@@ -960,12 +961,18 @@
           </div>
 
           <div class="fcard"><div class="fnum"><div class="fnumc">2</div><div class="fnumt">Letrado firmante</div></div>
-            <select class="sel" id="f-letrado" onchange="actualizarPlantillaTextos()"><option value="jesus">Jesús Mª Blanco Charlo — ICAM Col. 8233</option><option value="julia">Julia García Méndez — ICAM Col. 78.214</option><option value="luis">Luis Romero Vidal — ICAM Col. 65.901</option><option value="ana">Ana Díaz Fuentes — ICAM Col. 82.337</option><option value="pablo">Pablo Marín Ortega — ICAM Col. 90.118</option></select>
+            <select class="sel" id="f-letrado" onchange="actualizarPlantillaTextos(); toggleLetradoOtro();"><option value="jesus">Jesús Mª Blanco Charlo — ICAM Col. 8233</option><option value="julia">Julia García Méndez — ICAM Col. 78.214</option><option value="luis">Luis Romero Vidal — ICAM Col. 65.901</option><option value="ana">Ana Díaz Fuentes — ICAM Col. 82.337</option><option value="pablo">Pablo Marín Ortega — ICAM Col. 90.118</option><option value="otro">Otro (introducir datos manualmente)</option></select>
             <div class="colegiado"><i class="ti ti-circle-check"></i>Sus datos se incorporan al bloque "Representante:" del documento</div>
+            <div id="letrado-otro-box" style="display:none; margin-top:12px;">
+              <div class="frow"><div><label class="lbl">Nombre y apellidos</label><input class="inp" id="f-let-otro-nombre" placeholder="Nombre completo del letrado"></div><div><label class="lbl">Tratamiento</label><select class="sel" id="f-let-otro-trato"><option value="Don">Don</option><option value="Doña">Doña</option></select></div></div>
+              <div class="frow" style="margin-top:10px;"><div><label class="lbl">Número de colegiado</label><input class="inp" id="f-let-otro-colegiado" placeholder="Ej. 78.214"></div><div><label class="lbl">Email</label><input class="inp" id="f-let-otro-email" type="email" placeholder="letrado@despacho.es"></div></div>
+              <div class="frow" style="margin-top:10px;"><div><label class="lbl">Teléfono</label><input class="inp" id="f-let-otro-tel" placeholder="954 22 13 45"></div><div><label class="lbl">Dirección del despacho</label><input class="inp" id="f-let-otro-dir" placeholder="Calle Sierpes 65, 1º A, 41004 Sevilla"></div></div>
+            </div>
           </div>
 
           <div class="fcard"><div class="fnum"><div class="fnumc">3</div><div class="fnumt">Solicitante (parte proponente)</div></div>
-            <div class="frow"><div><label class="lbl">Intervención</label><select class="sel" id="intervencion" onchange="toggleRep(); actualizarPlantillaTextos();"><option value="rep">En representación</option><option value="propio">En nombre propio</option></select></div><div><label class="lbl">Tipo</label><select class="sel" id="f-sol-tipo" onchange="actualizarPlantillaTextos()"><option>Persona jurídica</option><option>Persona física</option></select></div></div>
+            <div class="ffull"><label class="lbl">Asunto</label><input class="inp" id="f-sol-asunto" placeholder="Asunto del expediente (texto libre)"></div>
+            <div class="frow" style="margin-top:10px;"><div><label class="lbl">Intervención</label><select class="sel" id="intervencion" onchange="toggleRep(); actualizarPlantillaTextos();"><option value="rep">En representación</option><option value="propio">En nombre propio</option></select></div><div><label class="lbl">Tipo</label><select class="sel" id="f-sol-tipo" onchange="actualizarPlantillaTextos()"><option>Persona jurídica</option><option>Persona física</option></select></div></div>
             <div class="frow"><div><label class="lbl">Nombre o razón social</label><input class="inp" id="f-sol-nombre" value="Renting Grupo Hermes S.L. [Ejemplo]" oninput="actualizarPlantillaTextos()"></div><div><label class="lbl">DNI / NIF / CIF</label><input class="inp" id="f-sol-nif" value="B-87654321 [Ejemplo]"></div></div>
             <div class="frow"><div><label class="lbl">Correo electrónico del solicitante</label><input class="inp" id="f-sol-email" type="email" value="proponente-ejemplo@correo.com" oninput="actualizarPlantillaTextos()"></div><div></div></div>
             <div class="ffull"><label class="lbl">Dirección</label><input class="inp" id="f-sol-dir" value="Av. de la Constitución 22, 41004 Sevilla [Ejemplo]"></div>
@@ -975,6 +982,7 @@
           <div class="fcard"><div class="fnum"><div class="fnumc">4</div><div class="fnumt">Requerido (parte reclamada)</div></div>
             <div class="frow"><div><label class="lbl">Tipo</label><select class="sel" id="f-req-tipo" onchange="actualizarPlantillaTextos()"><option>Persona física</option><option>Persona jurídica</option><option>Abogado / Letrado</option></select></div><div><label class="lbl">Nombre y apellidos / Razón social</label><input class="inp" id="f-req-nombre" value="Francisco García Pérez [Ejemplo]" oninput="actualizarPlantillaTextos()"></div></div>
             <div class="frow"><div><label class="lbl">DNI / NIE / NIF</label><input class="inp" id="f-req-nif" value="X-1234567-Z [Ejemplo]"></div><div><label class="lbl">Correo electrónico del requerido</label><input class="inp" id="f-req-email" type="email" value="reclamado-ejemplo@correo.com" oninput="actualizarPlantillaTextos()"></div></div>
+            <div class="frow" style="margin-top:10px;"><div><label class="lbl">Teléfono del requerido</label><input class="inp" id="f-req-tel" value="654 321 987 [Ejemplo]"></div><div></div></div>
             <div class="ffull"><label class="lbl">Dirección</label><input class="inp" id="f-req-dir" value="Calle Asencio y Toledo 33, 41006 Sevilla [Ejemplo]"></div>
           </div>
 
@@ -1043,6 +1051,8 @@
                 <div><strong>Plataforma de pago:</strong> <span id="r-sol-exp-pago">Stripe (tarjeta)</span></div>
                 <div><strong>Email Solicitante:</strong> <span class="hl" id="r-sol-email" contenteditable="true">***</span></div>
                 <div><strong>Email Requerido:</strong> <span class="hl" id="r-req-email" contenteditable="true">***</span></div>
+                <div><strong>Teléfono Requerido:</strong> <span class="hl" id="r-req-tel" contenteditable="true">***</span></div>
+                <div style="grid-column: 1 / -1;"><strong>Asunto:</strong> <span class="hl" id="r-asunto" contenteditable="true">***</span></div>
                 <div style="grid-column: 1 / -1;"><strong>Email Despacho:</strong> <span class="hl" id="r-despacho-email" contenteditable="true">masconline1@gmail.com</span></div>
               </div>
               <div class="firma" id="r-firma-solicitud-block" style="display:none; margin-top:24px;">
@@ -1129,6 +1139,7 @@
               <div><strong>Tipo de envío:</strong> <span id="p-sol-exp-envio">***</span></div>
               <div><strong>Plataforma de pago:</strong> <span id="p-sol-exp-pago">***</span></div>
               <div><strong>Estado:</strong> <span id="p-sol-exp-estado">***</span></div>
+              <div style="grid-column: 1 / -1;"><strong>Asunto:</strong> <span id="p-asunto-c">***</span></div>
             </div>
 
             <span class="dsec" style="font-size:11px; margin-top:14px;">Solicitante (parte proponente)</span>
@@ -1149,6 +1160,7 @@
               <div><strong>Dirección:</strong> <span id="p-req-dir-c">***</span></div>
               <div><strong>Tipo de requerido:</strong> <span id="p-req-tipo-c">***</span></div>
               <div><strong>Email de notificaciones:</strong> <span id="p-req-email-c">***</span></div>
+              <div><strong>Teléfono:</strong> <span id="p-req-tel-c">***</span></div>
             </div>
 
             <span class="dsec" style="font-size:11px; margin-top:14px;">Correos de gestión y despacho</span>
@@ -1833,8 +1845,7 @@ function actualizarResumenNotificar(){
   set('n-resumen-req', val('f-req-nombre'));
   set('n-resumen-req-email', val('f-req-email'));
 
-  var letradoSel = document.getElementById('f-letrado');
-  var letradoNombre = (letradoSel && letrados[letradoSel.value]) ? letrados[letradoSel.value].nombre : '';
+  var letradoNombre = getLetradoInfo().nombre;
   set('n-resumen-letrado', letradoNombre);
 
   var pagoSel = document.getElementById('f-pago');
@@ -2176,6 +2187,33 @@ var letrados = {
   }
 };
 
+// Devuelve los datos del letrado seleccionado, incluyendo el caso "otro" (campos manuales)
+function getLetradoInfo() {
+  var sel = document.getElementById('f-letrado');
+  var key = sel ? sel.value : '';
+  if (key === 'otro') {
+    var val = function(id){ var el = document.getElementById(id); return (el && el.value) ? el.value : ''; };
+    var trato = val('f-let-otro-trato') || 'Don';
+    var nombre = val('f-let-otro-nombre') || '***';
+    return {
+      nombre: nombre,
+      trato: trato,
+      colegio: val('f-let-otro-colegiado') || '***',
+      dir: val('f-let-otro-dir') || '***',
+      email: val('f-let-otro-email') || '***',
+      tel: val('f-let-otro-tel') || '***',
+      firma: 'Firma Letrado ' + trato + ' ' + nombre
+    };
+  }
+  return letrados[key] || letrados['jesus'];
+}
+
+function toggleLetradoOtro() {
+  var sel = document.getElementById('f-letrado');
+  var box = document.getElementById('letrado-otro-box');
+  if (box) box.style.display = (sel && sel.value === 'otro') ? 'block' : 'none';
+}
+
 function getFormattedDate() {
   var meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
   var d = new Date();
@@ -2272,8 +2310,8 @@ function actualizarPlantillaTextos() {
 // Generación dinámica del documento a partir del formulario
 function generarYMostrarDocumento() {
   var expId = document.getElementById('f-exp-id').value;
-  var letradoKey = document.getElementById('f-letrado').value;
-  var letradoInfo = letrados[letradoKey];
+  var letradoInfo = getLetradoInfo();
+  var asunto = document.getElementById('f-sol-asunto').value || "***";
   
   var tipoSelect = document.getElementById('f-exp-tipo');
   var isOferta = (tipoSelect && tipoSelect.value === 'oferta');
@@ -2297,6 +2335,7 @@ function generarYMostrarDocumento() {
   var reqNif = document.getElementById('f-req-nif').value || "***";
   var reqDir = document.getElementById('f-req-dir').value || "***";
   var reqEmail = document.getElementById('f-req-email').value || "***";
+  var reqTel = document.getElementById('f-req-tel').value || "***";
   
   var despachoEmail = document.getElementById('f-despacho-email').value || "masconline1@gmail.com";
   
@@ -2329,6 +2368,10 @@ function generarYMostrarDocumento() {
   if (rSolEmail) rSolEmail.textContent = solEmail;
   var rReqEmail = document.getElementById('r-req-email');
   if (rReqEmail) rReqEmail.textContent = reqEmail;
+  var rReqTel = document.getElementById('r-req-tel');
+  if (rReqTel) rReqTel.textContent = reqTel;
+  var rAsunto = document.getElementById('r-asunto');
+  if (rAsunto) rAsunto.textContent = asunto;
   var rDespachoEmail = document.getElementById('r-despacho-email');
   if (rDespachoEmail) rDespachoEmail.textContent = despachoEmail;
   
@@ -2426,6 +2469,8 @@ function generarYMostrarDocumento() {
   if (pSolExpEstado) {
     pSolExpEstado.textContent = isResultado ? "Resultado (Oferta vinculante)" : "En proceso (Solicitud de mediación)";
   }
+  var pAsuntoC = document.getElementById('p-asunto-c');
+  if (pAsuntoC) pAsuntoC.textContent = asunto;
   
   document.getElementById('p-sol-nombre-c').textContent = solNombre;
   document.getElementById('p-sol-nif-c').textContent = solNif;
@@ -2445,6 +2490,7 @@ function generarYMostrarDocumento() {
   document.getElementById('p-req-dir-c').textContent = reqDir;
   document.getElementById('p-req-tipo-c').textContent = reqTipo;
   document.getElementById('p-req-email-c').textContent = reqEmail;
+  document.getElementById('p-req-tel-c').textContent = reqTel;
   
   document.getElementById('p-despacho-email-c').textContent = despachoEmail;
   
@@ -2702,6 +2748,8 @@ function initSync() {
     { from: 'r-sol-exp-fecha', to: 'p-sol-exp-fecha' },
     { from: 'r-sol-email', to: 'p-sol-email-c' },
     { from: 'r-req-email', to: 'p-req-email-c' },
+    { from: 'r-req-tel', to: 'p-req-tel-c' },
+    { from: 'r-asunto', to: 'p-asunto-c' },
     { from: 'r-despacho-email', to: 'p-despacho-email-c' }
   ];
   
