@@ -1009,16 +1009,16 @@
       <div class="body">
         <div class="ph"><div><h1>Expedientes</h1><p>Listado completo. Selecciona varios para acciones en lote.</p></div><button class="btn" onclick="V('nuevo')"><i class="ti ti-plus"></i>Nuevo expediente</button></div>
         <div class="filtbar">
-          <input class="inp" placeholder="Buscar por referencia, requerido o letrado..." style="max-width:340px;">
-          <select class="sel" style="max-width:160px;"><option>Todos los estados</option><option>Notificado</option><option>Aceptado</option><option>Rechazado</option><option>Sin respuesta</option><option>Borrador</option></select>
-          <select class="sel" style="max-width:160px;"><option>Todos los letrados</option><option>J. García</option><option>L. Romero</option><option>A. Díaz</option><option>P. Marín</option></select>
+          <input class="inp" id="f-exp-buscar" oninput="filtrarExpedientes()" placeholder="Buscar por referencia, requerido o letrado..." style="max-width:340px;">
+          <select class="sel" id="f-exp-filtro-estado" onchange="filtrarExpedientes()" style="max-width:160px;"><option value="">Todos los estados</option><option>Notificado</option><option>Aceptado</option><option>Rechazado</option><option>Sin respuesta</option><option>Borrador</option></select>
+          <select class="sel" id="f-exp-filtro-letrado" onchange="filtrarExpedientes()" style="max-width:160px;"><option value="">Todos los letrados</option><option>J. García</option><option>L. Romero</option><option>A. Díaz</option><option>P. Marín</option></select>
         </div>
         <div class="card">
-          <div class="cardh"><h3>8 expedientes</h3><span id="selcount" style="font-size:10px;color:#94a3b8;">0 seleccionados</span></div>
+          <div class="cardh"><h3 id="exp-count-title">8 expedientes</h3><span id="selcount" style="font-size:10px;color:#94a3b8;">0 seleccionados</span></div>
           <div class="bulkbar" id="bulkbar"><span><strong id="bulkcount">0</strong> seleccionados</span><button><i class="ti ti-download"></i>Descargar dossiers</button><button><i class="ti ti-archive"></i>Archivar</button><button><i class="ti ti-file-export"></i>Exportar CSV</button></div>
           <table>
             <thead><tr><th style="width:32px;"><div class="checkbox-head" onclick="toggleAll(this)"></div></th><th>Referencia</th><th>Requerido</th><th>Letrado</th><th>Estado</th><th>Plazo</th></tr></thead>
-            <tbody>
+            <tbody id="exp-tabla-body">
               <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-014</span></td><td onclick="V('detalle')" style="cursor:pointer;">Francisco García Pérez</td><td>J. García</td><td><span class="bd bd-open">Notificado</span></td><td style="color:#64748b;">1 mes</td></tr>
               <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-013</span></td><td onclick="V('detalle')" style="cursor:pointer;">María Pérez Soto</td><td>L. Romero</td><td><span class="bd bd-acc">Aceptado</span></td><td style="color:#94a3b8;">—</td></tr>
               <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-012</span></td><td onclick="V('detalle')" style="cursor:pointer;">Talleres Núñez S.L.</td><td>J. García</td><td><span class="bd bd-noresp">Sin respuesta</span></td><td style="color:#94a3b8;">Vencido</td></tr>
@@ -1029,6 +1029,7 @@
               <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-007</span></td><td onclick="V('detalle')" style="cursor:pointer;">Gestiones Atlas S.L.</td><td>A. Díaz</td><td><span class="bd bd-acc">Aceptado</span></td><td style="color:#94a3b8;">—</td></tr>
             </tbody>
           </table>
+          <div id="exp-sin-resultados" style="display:none; padding:32px 16px; text-align:center; color:var(--color-text-light); font-size:12.5px;"><i class="ti ti-search-off" style="font-size:22px; display:block; margin-bottom:8px;"></i>No hay expedientes que coincidan con la búsqueda o los filtros.</div>
         </div>
       </div>
     </div>
@@ -2260,6 +2261,45 @@ function toggleRep(){ var v=document.getElementById('intervencion').value; docum
 function toggleOne(el){ el.classList.toggle('on'); updateSelCount(); }
 function toggleAll(head){ head.classList.toggle('on'); var on=head.classList.contains('on'); document.querySelectorAll('#v-expedientes tbody .checkbox').forEach(function(c){ if(on) c.classList.add('on'); else c.classList.remove('on'); }); updateSelCount(); }
 function updateSelCount(){ var n=document.querySelectorAll('#v-expedientes tbody .checkbox.on').length; document.getElementById('selcount').textContent=n+' seleccionados'; document.getElementById('bulkcount').textContent=n; document.getElementById('bulkbar').classList.toggle('on', n>0); }
+
+function normalizarTexto(s){
+  return (s || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function filtrarExpedientes(){
+  var buscarEl = document.getElementById('f-exp-buscar');
+  var estadoEl = document.getElementById('f-exp-filtro-estado');
+  var letradoEl = document.getElementById('f-exp-filtro-letrado');
+  var q = normalizarTexto(buscarEl ? buscarEl.value.trim() : '');
+  var estado = estadoEl ? estadoEl.value : '';
+  var letrado = letradoEl ? letradoEl.value : '';
+
+  var filas = document.querySelectorAll('#exp-tabla-body tr');
+  var visibles = 0;
+
+  filas.forEach(function(fila){
+    var celdas = fila.querySelectorAll('td');
+    if (celdas.length < 6) return;
+    var referencia = celdas[1].textContent;
+    var requerido = celdas[2].textContent;
+    var letradoFila = celdas[3].textContent.trim();
+    var estadoFila = celdas[4].textContent.trim();
+
+    var coincideTexto = !q || normalizarTexto(referencia).indexOf(q) !== -1 || normalizarTexto(requerido).indexOf(q) !== -1 || normalizarTexto(letradoFila).indexOf(q) !== -1;
+    var coincideEstado = !estado || estadoFila === estado;
+    var coincideLetrado = !letrado || letradoFila === letrado;
+
+    var visible = coincideTexto && coincideEstado && coincideLetrado;
+    fila.style.display = visible ? '' : 'none';
+    if (visible) visibles++;
+  });
+
+  var tituloEl = document.getElementById('exp-count-title');
+  if (tituloEl) tituloEl.textContent = visibles + (visibles === 1 ? ' expediente' : ' expedientes');
+
+  var sinResultadosEl = document.getElementById('exp-sin-resultados');
+  if (sinResultadosEl) sinResultadosEl.style.display = visibles === 0 ? 'block' : 'none';
+}
 
 // Datos profesionales de letrados
 var letrados = {
