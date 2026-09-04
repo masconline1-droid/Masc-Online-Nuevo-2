@@ -749,6 +749,45 @@
     color: var(--color-error) !important;
   }
 
+  /* Pestañas Listado/Clientes dentro de Expedientes */
+  .exptabbar {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--color-border-primary);
+    margin-bottom: 16px;
+  }
+  .exptab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--color-text-light);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color var(--transition-fast);
+  }
+  .exptab:hover { color: var(--color-text-muted); }
+  .exptab.on { color: var(--color-accent); border-bottom-color: var(--color-accent); }
+  .cli-row { cursor: pointer; }
+  .cli-row:hover { background: var(--color-accent-light); }
+  .cli-detalle-block { margin-bottom: 16px; }
+  .cli-detalle-block:last-child { margin-bottom: 0; }
+  .cli-doc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    border: 1px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    font-size: 12px;
+    margin-bottom: 6px;
+    background: #fff;
+  }
+
   /* Modal RGPD (consentimiento de tratamiento de datos al registrarse) */
   .rgpd-modal-overlay {
     position: fixed;
@@ -1008,29 +1047,54 @@
       <div class="top"><div class="toptitle"><i class="ti ti-folders"></i>Expedientes</div><div class="topr"><i class="ti ti-bell bell"></i></div></div>
       <div class="body">
         <div class="ph"><div><h1>Expedientes</h1><p>Listado completo. Selecciona varios para acciones en lote.</p></div><button class="btn" onclick="V('nuevo')"><i class="ti ti-plus"></i>Nuevo expediente</button></div>
-        <div class="filtbar">
-          <input class="inp" id="f-exp-buscar" oninput="filtrarExpedientes()" placeholder="Buscar por referencia, requerido o letrado..." style="max-width:340px;">
-          <select class="sel" id="f-exp-filtro-estado" onchange="filtrarExpedientes()" style="max-width:160px;"><option value="">Todos los estados</option><option>Notificado</option><option>Aceptado</option><option>Rechazado</option><option>Sin respuesta</option><option>Borrador</option></select>
-          <select class="sel" id="f-exp-filtro-letrado" onchange="filtrarExpedientes()" style="max-width:160px;"><option value="">Todos los letrados</option><option>J. García</option><option>L. Romero</option><option>A. Díaz</option><option>P. Marín</option></select>
+
+        <div class="exptabbar">
+          <button type="button" class="exptab on" id="exptab-btn-listado" onclick="cambiarTabExpedientes('listado')"><i class="ti ti-list"></i>Listado</button>
+          <button type="button" class="exptab" id="exptab-btn-clientes" onclick="cambiarTabExpedientes('clientes')"><i class="ti ti-users"></i>Clientes</button>
         </div>
-        <div class="card">
-          <div class="cardh"><h3 id="exp-count-title">8 expedientes</h3><span id="selcount" style="font-size:10px;color:#94a3b8;">0 seleccionados</span></div>
-          <div class="bulkbar" id="bulkbar"><span><strong id="bulkcount">0</strong> seleccionados</span><button><i class="ti ti-download"></i>Descargar dossiers</button><button><i class="ti ti-archive"></i>Archivar</button><button><i class="ti ti-file-export"></i>Exportar CSV</button></div>
-          <table>
-            <thead><tr><th style="width:32px;"><div class="checkbox-head" onclick="toggleAll(this)"></div></th><th>Referencia</th><th>Requerido</th><th>Letrado</th><th>Estado</th><th>Plazo</th></tr></thead>
-            <tbody id="exp-tabla-body">
-              <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-014</span></td><td onclick="V('detalle')" style="cursor:pointer;">Francisco García Pérez</td><td>J. García</td><td><span class="bd bd-open">Notificado</span></td><td style="color:#64748b;">1 mes</td></tr>
-              <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-013</span></td><td onclick="V('detalle')" style="cursor:pointer;">María Pérez Soto</td><td>L. Romero</td><td><span class="bd bd-acc">Aceptado</span></td><td style="color:#94a3b8;">—</td></tr>
-              <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-012</span></td><td onclick="V('detalle')" style="cursor:pointer;">Talleres Núñez S.L.</td><td>J. García</td><td><span class="bd bd-noresp">Sin respuesta</span></td><td style="color:#94a3b8;">Vencido</td></tr>
-              <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-011</span></td><td onclick="V('detalle')" style="cursor:pointer;">Inversiones Lima S.A.</td><td>A. Díaz</td><td><span class="bd bd-not">Notificado</span></td><td style="color:#d97706;">4 días</td></tr>
-              <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-010</span></td><td onclick="V('detalle')" style="cursor:pointer;">Carmen Ruiz Alba</td><td>P. Marín</td><td><span class="bd bd-dft">Borrador</span></td><td style="color:#94a3b8;">—</td></tr>
-              <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-009</span></td><td onclick="V('detalle')" style="cursor:pointer;">Reformas del Sur S.L.</td><td>L. Romero</td><td><span class="bd bd-rej">Rechazado</span></td><td style="color:#94a3b8;">—</td></tr>
-              <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-008</span></td><td onclick="V('detalle')" style="cursor:pointer;">Antonio Ledesma Gil</td><td>J. García</td><td><span class="bd bd-open">Notificado</span></td><td style="color:#d97706;">7 días</td></tr>
-              <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-007</span></td><td onclick="V('detalle')" style="cursor:pointer;">Gestiones Atlas S.L.</td><td>A. Díaz</td><td><span class="bd bd-acc">Aceptado</span></td><td style="color:#94a3b8;">—</td></tr>
-            </tbody>
-          </table>
-          <div id="exp-sin-resultados" style="display:none; padding:32px 16px; text-align:center; color:var(--color-text-light); font-size:12.5px;"><i class="ti ti-search-off" style="font-size:22px; display:block; margin-bottom:8px;"></i>No hay expedientes que coincidan con la búsqueda o los filtros.</div>
+
+        <div id="exp-tab-listado">
+          <div class="filtbar">
+            <input class="inp" id="f-exp-buscar" oninput="filtrarExpedientes()" placeholder="Buscar por referencia, requerido o letrado..." style="max-width:340px;">
+            <select class="sel" id="f-exp-filtro-estado" onchange="filtrarExpedientes()" style="max-width:160px;"><option value="">Todos los estados</option><option>Notificado</option><option>Aceptado</option><option>Rechazado</option><option>Sin respuesta</option><option>Borrador</option></select>
+            <select class="sel" id="f-exp-filtro-letrado" onchange="filtrarExpedientes()" style="max-width:160px;"><option value="">Todos los letrados</option><option>J. García</option><option>L. Romero</option><option>A. Díaz</option><option>P. Marín</option></select>
+          </div>
+          <div class="card">
+            <div class="cardh"><h3 id="exp-count-title">8 expedientes</h3><span id="selcount" style="font-size:10px;color:#94a3b8;">0 seleccionados</span></div>
+            <div class="bulkbar" id="bulkbar"><span><strong id="bulkcount">0</strong> seleccionados</span><button><i class="ti ti-download"></i>Descargar dossiers</button><button><i class="ti ti-archive"></i>Archivar</button><button><i class="ti ti-file-export"></i>Exportar CSV</button></div>
+            <table>
+              <thead><tr><th style="width:32px;"><div class="checkbox-head" onclick="toggleAll(this)"></div></th><th>Referencia</th><th>Requerido</th><th>Letrado</th><th>Estado</th><th>Plazo</th></tr></thead>
+              <tbody id="exp-tabla-body">
+                <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-014</span></td><td onclick="V('detalle')" style="cursor:pointer;">Francisco García Pérez</td><td>J. García</td><td><span class="bd bd-open">Notificado</span></td><td style="color:#64748b;">1 mes</td></tr>
+                <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-013</span></td><td onclick="V('detalle')" style="cursor:pointer;">María Pérez Soto</td><td>L. Romero</td><td><span class="bd bd-acc">Aceptado</span></td><td style="color:#94a3b8;">—</td></tr>
+                <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-012</span></td><td onclick="V('detalle')" style="cursor:pointer;">Talleres Núñez S.L.</td><td>J. García</td><td><span class="bd bd-noresp">Sin respuesta</span></td><td style="color:#94a3b8;">Vencido</td></tr>
+                <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-011</span></td><td onclick="V('detalle')" style="cursor:pointer;">Inversiones Lima S.A.</td><td>A. Díaz</td><td><span class="bd bd-not">Notificado</span></td><td style="color:#d97706;">4 días</td></tr>
+                <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-010</span></td><td onclick="V('detalle')" style="cursor:pointer;">Carmen Ruiz Alba</td><td>P. Marín</td><td><span class="bd bd-dft">Borrador</span></td><td style="color:#94a3b8;">—</td></tr>
+                <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-009</span></td><td onclick="V('detalle')" style="cursor:pointer;">Reformas del Sur S.L.</td><td>L. Romero</td><td><span class="bd bd-rej">Rechazado</span></td><td style="color:#94a3b8;">—</td></tr>
+                <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-008</span></td><td onclick="V('detalle')" style="cursor:pointer;">Antonio Ledesma Gil</td><td>J. García</td><td><span class="bd bd-open">Notificado</span></td><td style="color:#d97706;">7 días</td></tr>
+                <tr><td><div class="checkbox" onclick="toggleOne(this)"></div></td><td onclick="V('detalle')" style="cursor:pointer;"><span class="ref">EXP-2026-007</span></td><td onclick="V('detalle')" style="cursor:pointer;">Gestiones Atlas S.L.</td><td>A. Díaz</td><td><span class="bd bd-acc">Aceptado</span></td><td style="color:#94a3b8;">—</td></tr>
+              </tbody>
+            </table>
+            <div id="exp-sin-resultados" style="display:none; padding:32px 16px; text-align:center; color:var(--color-text-light); font-size:12.5px;"><i class="ti ti-search-off" style="font-size:22px; display:block; margin-bottom:8px;"></i>No hay expedientes que coincidan con la búsqueda o los filtros.</div>
+          </div>
         </div>
+
+        <div id="exp-tab-clientes" style="display:none;">
+          <div class="filtbar">
+            <input class="inp" id="f-cli-buscar" oninput="filtrarClientes()" placeholder="Buscar por DNI/NIE/CIF o nombre del cliente..." style="max-width:420px;">
+          </div>
+          <div class="card">
+            <div class="cardh"><h3 id="cli-count-title">6 clientes</h3><span style="font-size:10px;color:#94a3b8;">Agrupado por documento único (DNI/NIE/CIF)</span></div>
+            <table>
+              <thead><tr><th style="width:28px;"></th><th>Documento</th><th>Cliente (solicitante)</th><th>Nº expedientes</th><th>Último expediente</th><th>Estado</th></tr></thead>
+              <tbody id="cli-tabla-body">
+              </tbody>
+            </table>
+            <div id="cli-detalle-panel" style="display:none; border-top:1px solid var(--color-border-tertiary); padding:18px 20px; background:#f8fafc;"></div>
+            <div id="cli-sin-resultados" style="display:none; padding:32px 16px; text-align:center; color:var(--color-text-light); font-size:12.5px;"><i class="ti ti-search-off" style="font-size:22px; display:block; margin-bottom:8px;"></i>No hay clientes que coincidan con la búsqueda.</div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -2255,6 +2319,9 @@ function V(id){
   if (id === 'perfil-colegial') {
     if (typeof resetFormColegial === 'function') resetFormColegial();
   }
+  if (id === 'expedientes') {
+    if (typeof cambiarTabExpedientes === 'function') cambiarTabExpedientes('listado');
+  }
 }
 function seleccionarPill(el,groupId){ document.querySelectorAll('#'+groupId+' .pill').forEach(function(p){p.classList.remove('sel');}); el.classList.add('sel'); }
 function toggleRep(){ var v=document.getElementById('intervencion').value; document.getElementById('repbox').style.display = v==='rep'?'block':'none'; }
@@ -2298,6 +2365,169 @@ function filtrarExpedientes(){
   if (tituloEl) tituloEl.textContent = visibles + (visibles === 1 ? ' expediente' : ' expedientes');
 
   var sinResultadosEl = document.getElementById('exp-sin-resultados');
+  if (sinResultadosEl) sinResultadosEl.style.display = visibles === 0 ? 'block' : 'none';
+}
+
+/* ---------- Pestaña Clientes (dentro de Expedientes) ---------- */
+/* Agrupación por documento único (DNI/NIE/CIF) del solicitante representado por el despacho.
+   Datos de demostración, sin persistencia real (frontend-only). */
+var clientesDemo = [
+  { doc: '11.222.333-A', nombre: 'Julia Martín Cano', expedientes: [
+      { ref: 'EXP-2026-014', estado: 'Notificado' },
+      { ref: 'EXP-2026-010', estado: 'Borrador' },
+      { ref: 'EXP-2026-007', estado: 'Aceptado' }
+    ],
+    documentos: [
+      { nombre: 'DNI', estado: 'recibido' },
+      { nombre: 'Poder de representación', estado: 'pendiente' }
+    ] },
+  { doc: 'B-12345678', nombre: 'Constructora Beltrán S.L.', expedientes: [
+      { ref: 'EXP-2026-011', estado: 'Notificado' },
+      { ref: 'EXP-2026-009', estado: 'Rechazado' }
+    ],
+    documentos: [
+      { nombre: 'CIF de la sociedad', estado: 'recibido' },
+      { nombre: 'Escritura de apoderamiento', estado: 'recibido' }
+    ] },
+  { doc: '22.333.444-B', nombre: 'Carmen Ruiz Alba', expedientes: [
+      { ref: 'EXP-2026-013', estado: 'Aceptado' }
+    ],
+    documentos: [
+      { nombre: 'DNI', estado: 'pendiente' }
+    ] },
+  { doc: 'X-1234567-C', nombre: 'Marek Nowak', expedientes: [
+      { ref: 'EXP-2026-012', estado: 'Sin respuesta' }
+    ],
+    documentos: [
+      { nombre: 'NIE', estado: 'recibido' },
+      { nombre: 'Contrato original', estado: 'pendiente' }
+    ] },
+  { doc: 'A-87654321', nombre: 'Grupo Inversor Atlas S.A.', expedientes: [
+      { ref: 'EXP-2026-008', estado: 'Notificado' }
+    ],
+    documentos: [
+      { nombre: 'CIF de la sociedad', estado: 'pendiente' }
+    ] },
+  { doc: '33.444.555-D', nombre: 'Pedro Sánchez Vidal', expedientes: [
+      { ref: 'EXP-2026-014', estado: 'Notificado' }
+    ],
+    documentos: [] }
+];
+
+function cambiarTabExpedientes(tab){
+  var btnListado = document.getElementById('exptab-btn-listado');
+  var btnClientes = document.getElementById('exptab-btn-clientes');
+  var panelListado = document.getElementById('exp-tab-listado');
+  var panelClientes = document.getElementById('exp-tab-clientes');
+  if (!btnListado || !btnClientes || !panelListado || !panelClientes) return;
+
+  var esListado = tab === 'listado';
+  btnListado.classList.toggle('on', esListado);
+  btnClientes.classList.toggle('on', !esListado);
+  panelListado.style.display = esListado ? '' : 'none';
+  panelClientes.style.display = esListado ? 'none' : '';
+
+  if (!esListado) {
+    renderClientesTab();
+  }
+}
+
+function badgeClaseEstado(estado){
+  var map = { 'Notificado': 'bd-not', 'Aceptado': 'bd-acc', 'Rechazado': 'bd-rej', 'Sin respuesta': 'bd-noresp', 'Borrador': 'bd-dft' };
+  return map[estado] || 'bd-open';
+}
+
+function renderClientesTab(){
+  var tbody = document.getElementById('cli-tabla-body');
+  if (!tbody) return;
+  tbody.innerHTML = clientesDemo.map(function(c, idx){
+    var ultimo = c.expedientes[0];
+    return '<tr class="cli-row" data-cli-idx="' + idx + '" onclick="toggleClienteDetalle(' + idx + ')">'
+      + '<td><i class="ti ti-chevron-right" id="cli-chevron-' + idx + '"></i></td>'
+      + '<td><span class="ref">' + c.doc + '</span></td>'
+      + '<td>' + c.nombre + '</td>'
+      + '<td>' + c.expedientes.length + '</td>'
+      + '<td>' + (ultimo ? ultimo.ref : '—') + '</td>'
+      + '<td>' + (ultimo ? '<span class="bd ' + badgeClaseEstado(ultimo.estado) + '">' + ultimo.estado + '</span>' : '<span class="bd bd-dft">—</span>') + '</td>'
+      + '</tr>';
+  }).join('');
+  filtrarClientes();
+}
+
+var clienteDetalleAbierto = null;
+
+function toggleClienteDetalle(idx){
+  var panel = document.getElementById('cli-detalle-panel');
+  if (!panel) return;
+
+  document.querySelectorAll('.cli-row').forEach(function(f){ f.style.background = ''; });
+  document.querySelectorAll('[id^="cli-chevron-"]').forEach(function(ic){ ic.className = 'ti ti-chevron-right'; });
+
+  if (clienteDetalleAbierto === idx) {
+    clienteDetalleAbierto = null;
+    panel.style.display = 'none';
+    panel.innerHTML = '';
+    return;
+  }
+
+  clienteDetalleAbierto = idx;
+  var c = clientesDemo[idx];
+  var chevron = document.getElementById('cli-chevron-' + idx);
+  if (chevron) chevron.className = 'ti ti-chevron-down';
+  var fila = document.querySelector('.cli-row[data-cli-idx="' + idx + '"]');
+  if (fila) fila.style.background = 'var(--color-accent-light)';
+
+  var expedientesHtml = c.expedientes.map(function(e){
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--color-border-tertiary);">'
+      + '<span class="ref" style="cursor:pointer;" onclick="event.stopPropagation();V(\'detalle\')">' + e.ref + '</span>'
+      + '<span class="bd ' + badgeClaseEstado(e.estado) + '">' + e.estado + '</span>'
+      + '</div>';
+  }).join('') || '<p style="color:var(--color-text-light);font-size:12px;">Sin expedientes vinculados.</p>';
+
+  var documentosHtml = c.documentos.map(function(d, dIdx){
+    var pendiente = d.estado === 'pendiente';
+    return '<div class="cli-doc-item">'
+      + '<span><i class="ti ' + (pendiente ? 'ti-clock' : 'ti-check') + '" style="margin-right:6px;color:' + (pendiente ? 'var(--color-text-light)' : 'var(--color-accent)') + ';"></i>' + d.nombre + '</span>'
+      + '<span class="bd ' + (pendiente ? 'bd-dft' : 'bd-acc') + '">' + (pendiente ? 'Pendiente' : 'Recibido') + '</span>'
+      + '</div>';
+  }).join('') || '<p style="color:var(--color-text-light);font-size:12px;">No hay documentos solicitados todavía.</p>';
+
+  panel.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">'
+    + '<div class="cli-detalle-block"><h4 style="font-size:12.5px;margin-bottom:8px;">Expedientes vinculados a ' + c.nombre + '</h4>' + expedientesHtml + '</div>'
+    + '<div class="cli-detalle-block"><h4 style="font-size:12.5px;margin-bottom:8px;">Documentos solicitados al cliente</h4>' + documentosHtml
+    + '<button class="btno" style="margin-top:8px;font-size:11.5px;" onclick="event.stopPropagation();agregarDocumentoSolicitado(' + idx + ')"><i class="ti ti-plus"></i>Solicitar documento</button>'
+    + '</div></div>';
+  panel.style.display = 'block';
+}
+
+function agregarDocumentoSolicitado(idx){
+  var nombre = prompt('¿Qué documento quieres solicitar a este cliente?');
+  if (!nombre) return;
+  clientesDemo[idx].documentos.push({ nombre: nombre, estado: 'pendiente' });
+  toggleClienteDetalle(idx); // cierra
+  toggleClienteDetalle(idx); // reabre con el nuevo documento
+}
+
+function filtrarClientes(){
+  var buscarEl = document.getElementById('f-cli-buscar');
+  var q = normalizarTexto(buscarEl ? buscarEl.value.trim() : '');
+  var filas = document.querySelectorAll('#cli-tabla-body tr');
+  var visibles = 0;
+
+  filas.forEach(function(fila){
+    var celdas = fila.querySelectorAll('td');
+    if (celdas.length < 6) return;
+    var doc = celdas[1].textContent;
+    var nombre = celdas[2].textContent;
+    var visible = !q || normalizarTexto(doc).indexOf(q) !== -1 || normalizarTexto(nombre).indexOf(q) !== -1;
+    fila.style.display = visible ? '' : 'none';
+    if (visible) visibles++;
+  });
+
+  var tituloEl = document.getElementById('cli-count-title');
+  if (tituloEl) tituloEl.textContent = visibles + (visibles === 1 ? ' cliente' : ' clientes');
+
+  var sinResultadosEl = document.getElementById('cli-sin-resultados');
   if (sinResultadosEl) sinResultadosEl.style.display = visibles === 0 ? 'block' : 'none';
 }
 
