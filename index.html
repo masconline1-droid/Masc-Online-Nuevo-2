@@ -788,6 +788,48 @@
     background: #fff;
   }
 
+  /* Redacción asistida por IA (Gemini, vía Edge Function de Supabase) */
+  .btn-ia {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--color-accent);
+    background: var(--color-accent-light);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity var(--transition-fast);
+  }
+  .btn-ia:hover { opacity: 0.85; }
+  .btn-ia:disabled { cursor: not-allowed; opacity: 0.6; }
+  .btn-ia .ti-loader { animation: spin 1.2s linear infinite; }
+  .ia-badge {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6d28d9;
+    background: #f5f3ff;
+    border: 1px solid #ddd6fe;
+    border-radius: var(--border-radius-md);
+  }
+  .ia-badge.on { display: flex; }
+  .ia-error {
+    display: none;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-error);
+  }
+  .ia-error.on { display: block; }
+
   /* Modal RGPD (consentimiento de tratamiento de datos al registrarse) */
   .rgpd-modal-overlay {
     position: fixed;
@@ -1190,7 +1232,10 @@
           </div>
 
           <div class="fcard"><div class="fnum"><div class="fnumc">6</div><div class="fnumt" id="lbl-conflicto">Descripción del conflicto</div></div>
-            <textarea class="ta" id="f-conflicto" style="min-height:60px;">Resolución extrajudicial del contrato de arrendamiento de local de negocio, como consecuencia de la expiración del plazo contractual, relativo al inmueble sito en la Calle Asencio y Toledo nº 33 [Ejemplo].</textarea>
+            <textarea class="ta" id="f-conflicto" oninput="marcarEdicionManual('conflicto')" style="min-height:60px;">Resolución extrajudicial del contrato de arrendamiento de local de negocio, como consecuencia de la expiración del plazo contractual, relativo al inmueble sito en la Calle Asencio y Toledo nº 33 [Ejemplo].</textarea>
+            <button type="button" class="btn-ia" id="btn-ia-conflicto" onclick="redactarConIA('conflicto')"><i class="ti ti-wand"></i> Redactar con IA</button>
+            <div class="ia-badge" id="ia-badge-conflicto"><i class="ti ti-wand"></i> Texto generado con IA · revisa antes de enviar</div>
+            <div class="ia-error" id="ia-error-conflicto"></div>
             <div style="margin-top: 12px; display: flex; gap: 12px; background: var(--color-warning-light); border: 1px solid #fde68a; border-radius: var(--border-radius-md); padding: 12px 14px; color: #92400e; font-size: 11.5px; line-height: 1.5;">
               <i class="ti ti-alert-triangle" style="font-size: 18px; color: var(--color-warning); flex-shrink: 0; margin-top: 1px;"></i>
               <div>
@@ -1201,12 +1246,18 @@
           </div>
 
           <div class="fcard" id="card-antecedentes"><div class="fnum"><div class="fnumc">7</div><div class="fnumt">Antecedentes</div></div>
-            <textarea class="ta" id="f-antecedentes" style="min-height:130px;" oninput="document.getElementById('f-auto-textos').checked = false;"></textarea>
+            <textarea class="ta" id="f-antecedentes" style="min-height:130px;" oninput="document.getElementById('f-auto-textos').checked = false; marcarEdicionManual('antecedentes');"></textarea>
+            <button type="button" class="btn-ia" id="btn-ia-antecedentes" onclick="redactarConIA('antecedentes')"><i class="ti ti-wand"></i> Redactar con IA</button>
+            <div class="ia-badge" id="ia-badge-antecedentes"><i class="ti ti-wand"></i> Texto generado con IA · revisa antes de enviar</div>
+            <div class="ia-error" id="ia-error-antecedentes"></div>
             <div style="margin-top: 6px;"><label style="font-size:11px;font-weight:600;color:var(--color-text-muted);display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="f-auto-textos" checked style="cursor:pointer;" onchange="actualizarPlantillaTextos()"> Auto-generar textos redactados a partir de los datos introducidos</label></div>
           </div>
 
           <div class="fcard" id="card-propuesta"><div class="fnum"><div class="fnumc">8</div><div class="fnumt">Propuesta de resolución</div></div>
-            <textarea class="ta" id="f-propuesta" style="min-height:90px;" oninput="document.getElementById('f-auto-textos').checked = false;"></textarea>
+            <textarea class="ta" id="f-propuesta" style="min-height:90px;" oninput="document.getElementById('f-auto-textos').checked = false; marcarEdicionManual('propuesta');"></textarea>
+            <button type="button" class="btn-ia" id="btn-ia-propuesta" onclick="redactarConIA('propuesta')"><i class="ti ti-wand"></i> Redactar con IA</button>
+            <div class="ia-badge" id="ia-badge-propuesta"><i class="ti ti-wand"></i> Texto generado con IA · revisa antes de enviar</div>
+            <div class="ia-error" id="ia-error-propuesta"></div>
           </div>
 
           <div class="fcard"><div class="fnum"><div class="fnumc">9</div><div class="fnumt">Plataforma de pago</div></div>
@@ -2710,6 +2761,78 @@ function actualizarPlantillaTextos() {
   var propsText = props.join("\n\n");
   var propEl = document.getElementById('f-propuesta');
   if (propEl) propEl.value = propsText;
+}
+
+// ---------------------------------------------------------------------
+// Redacción asistida por IA (Gemini, vía Edge Function 'redactar-ia' de
+// Supabase). El texto generado siempre debe ser revisado por el letrado
+// antes de enviarse: por eso se marca con una insignia visible que
+// desaparece en cuanto el usuario edita manualmente el campo.
+// ---------------------------------------------------------------------
+var IA_CAMPOS = {
+  conflicto: { textarea: 'f-conflicto', boton: 'btn-ia-conflicto', badge: 'ia-badge-conflicto', error: 'ia-error-conflicto' },
+  antecedentes: { textarea: 'f-antecedentes', boton: 'btn-ia-antecedentes', badge: 'ia-badge-antecedentes', error: 'ia-error-antecedentes' },
+  propuesta: { textarea: 'f-propuesta', boton: 'btn-ia-propuesta', badge: 'ia-badge-propuesta', error: 'ia-error-propuesta' }
+};
+
+function marcarEdicionManual(campo) {
+  var cfg = IA_CAMPOS[campo];
+  if (!cfg) return;
+  var badge = document.getElementById(cfg.badge);
+  if (badge) badge.classList.remove('on');
+}
+
+function limpiarEjemplo(valor) {
+  return (valor || '').replace(/\s*\[Ejemplo\]/g, '').trim();
+}
+
+async function redactarConIA(campo) {
+  var cfg = IA_CAMPOS[campo];
+  if (!cfg) return;
+  var textarea = document.getElementById(cfg.textarea);
+  var boton = document.getElementById(cfg.boton);
+  var badge = document.getElementById(cfg.badge);
+  var errorEl = document.getElementById(cfg.error);
+  if (!textarea || !boton) return;
+
+  errorEl.classList.remove('on');
+  errorEl.textContent = '';
+  boton.disabled = true;
+  var iconoOriginal = boton.innerHTML;
+  boton.innerHTML = '<i class="ti ti-loader"></i> Redactando…';
+
+  function campoVal(id) { var el = document.getElementById(id); return el ? limpiarEjemplo(el.value) : ''; }
+  var tipoSelect = document.getElementById('f-exp-tipo');
+  var contexto = {
+    tipo: tipoSelect ? tipoSelect.options[tipoSelect.selectedIndex].text : '',
+    asunto: campoVal('f-sol-asunto'),
+    solicitante: campoVal('f-sol-nombre'),
+    requerido: campoVal('f-req-nombre'),
+    descripcionActual: campoVal('f-conflicto'),
+    antecedentesActual: campoVal('f-antecedentes'),
+    propuestaActual: campoVal('f-propuesta'),
+  };
+
+  try {
+    var resp = await _supabase.functions.invoke('redactar-ia', { body: { campo: campo, contexto: contexto } });
+    if (resp.error) throw new Error(resp.error.message || 'Error al generar el texto con IA.');
+    var data = resp.data;
+    if (!data || !data.texto) throw new Error('La IA no ha devuelto texto.');
+
+    textarea.value = data.texto;
+    if (badge) badge.classList.add('on');
+
+    if (campo === 'antecedentes' || campo === 'propuesta') {
+      var autoEl = document.getElementById('f-auto-textos');
+      if (autoEl) autoEl.checked = false;
+    }
+  } catch (err) {
+    errorEl.textContent = 'No se ha podido redactar con IA: ' + err.message;
+    errorEl.classList.add('on');
+  } finally {
+    boton.disabled = false;
+    boton.innerHTML = iconoOriginal;
+  }
 }
 
 // Generación dinámica del documento a partir del formulario
