@@ -2815,7 +2815,21 @@ async function redactarConIA(campo) {
 
   try {
     var resp = await _supabase.functions.invoke('redactar-ia', { body: { campo: campo, contexto: contexto } });
-    if (resp.error) throw new Error(resp.error.message || 'Error al generar el texto con IA.');
+    if (resp.error) {
+      // supabase-js solo pone un mensaje genérico en resp.error.message
+      // ("Edge Function returned a non-2xx status code"). El motivo real
+      // que envía nuestra función (falta de clave, modelo no disponible,
+      // error de Gemini, etc.) va en el cuerpo JSON de la respuesta HTTP,
+      // accesible en resp.error.context.
+      var detalle = '';
+      try {
+        if (resp.error.context && typeof resp.error.context.json === 'function') {
+          var cuerpo = await resp.error.context.json();
+          detalle = (cuerpo && cuerpo.error) || '';
+        }
+      } catch (e2) { /* el cuerpo no era JSON parseable; usamos el mensaje genérico */ }
+      throw new Error(detalle || resp.error.message || 'Error al generar el texto con IA.');
+    }
     var data = resp.data;
     if (!data || !data.texto) throw new Error('La IA no ha devuelto texto.');
 
