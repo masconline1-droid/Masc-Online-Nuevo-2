@@ -2257,7 +2257,7 @@ function cargarEjemploAleatorio() {
   actualizarPlantillaTextos();
 }
 
-function V(id){
+function V(id, fromHistory){
   // Enforce session security
   if (!currentUser && id !== 'login') {
     id = 'login';
@@ -2321,6 +2321,18 @@ function V(id){
   }
   if (id === 'expedientes') {
     if (typeof cambiarTabExpedientes === 'function') cambiarTabExpedientes('listado');
+  }
+
+  // Historial de navegación: permite usar el botón "atrás/adelante" del navegador.
+  // Si la llamada viene del propio popstate (fromHistory=true), el navegador ya
+  // gestionó su pila de historial y no hay que tocarla de nuevo.
+  if (!fromHistory) {
+    var currentHash = location.hash.replace('#', '');
+    if (currentHash !== id) {
+      history.pushState({ mascView: id }, '', '#' + id);
+    } else {
+      history.replaceState({ mascView: id }, '', '#' + id);
+    }
   }
 }
 function seleccionarPill(el,groupId){ document.querySelectorAll('#'+groupId+' .pill').forEach(function(p){p.classList.remove('sel');}); el.classList.add('sel'); }
@@ -3575,6 +3587,15 @@ _supabase.auth.onAuthStateChange(function(event, session) {
     currentUser = null;
     V('login');
   }
+});
+
+// Soporte para el botón "atrás/adelante" del navegador: cada vista tiene su
+// propia entrada de historial (V() la registra), y al navegar con los botones
+// del navegador simplemente reconstruimos la vista correspondiente sin volver
+// a empujar una entrada nueva.
+window.addEventListener('popstate', function(e){
+  var id = (e.state && e.state.mascView) || (location.hash ? location.hash.replace('#', '') : (currentUser ? 'inicio' : 'login'));
+  V(id, true);
 });
 
 initSync();
