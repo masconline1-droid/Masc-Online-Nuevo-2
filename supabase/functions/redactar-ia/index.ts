@@ -14,7 +14,7 @@
 const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
 // Configurable por si cambia el modelo disponible para tu cuenta/clave.
 // Comprueba en aistudio.google.com qué modelos tienes habilitados.
-const GEMINI_MODEL = Deno.env.get('GEMINI_MODEL') || 'gemini-2.5-flash';
+const GEMINI_MODEL = Deno.env.get('GEMINI_MODEL') || 'gemini-3.5-flash';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 const CORS_HEADERS: Record<string, string> = {
