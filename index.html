@@ -1807,15 +1807,7 @@
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;"><div><div style="font-size:12px;font-weight:500;">QTSP cualificado</div><div style="font-size:10px;color:#94a3b8;margin-top:2px;">Prestador para envíos con valor probatorio</div></div><select class="sel" id="f-qtsp-provider" style="width:180px;" onchange="toggleResendCard()"><option>Lleida.net</option><option>Logalty</option><option>eEvidence</option><option value="resend">Resend (Email API)</option></select></div>
           </div>
           <div class="ic" id="card-resend-config" style="display:none;"><h4>Integración con Resend</h4>
-            <div class="ffull">
-              <label class="lbl">API Key de Resend (re_xxxxxxxxx)</label>
-              <input class="inp" id="f-resend-key" type="password" placeholder="Introduce tu Resend API Key" onchange="guardarAjustesResend()">
-            </div>
-            <div class="ffull" style="margin-top: 10px;">
-              <label class="lbl">Remitente Autorizado (From)</label>
-              <input class="inp" id="f-resend-from" placeholder="Ej: MASC Digital <notificaciones@tudominio.com>" onchange="guardarAjustesResend()">
-              <span class="hint" style="display:block; margin-top:4px;">Debe ser un remitente o dominio validado en tu panel de Resend. Si usas la cuenta de pruebas de Resend, pon 'onboarding@resend.dev' (sólo enviará a tu propio email).</span>
-            </div>
+            <p style="font-size:12px; color:#64748b; line-height:1.6; margin:0;">El envío de correos con Resend se hace desde el servidor (Edge Function de Supabase), no desde el navegador. La API Key y el remitente autorizado (From) se configuran como secretos del proyecto de Supabase (<code>RESEND_API_KEY</code> y <code>RESEND_FROM_EMAIL</code>), no aquí, para que la clave nunca quede expuesta en este dispositivo.</p>
           </div>
         </div>
       </div>
@@ -1875,16 +1867,12 @@ function sidebar(active){
 }
 
 function cargarAjustesResend() {
-  var key = localStorage.getItem('resend_api_key') || '';
-  var from = localStorage.getItem('resend_from_email') || 'onboarding@resend.dev';
+  // La API Key y el remitente de Resend ya no se guardan en este navegador:
+  // viven como secretos del proyecto de Supabase (RESEND_API_KEY,
+  // RESEND_FROM_EMAIL) y se usan solo desde la Edge Function. Aquí solo
+  // persiste la elección del proveedor de envío (QTSP vs Resend).
   var prov = localStorage.getItem('qtsp_provider') || 'Lleida.net';
-  
-  var keyEl = document.getElementById('f-resend-key');
-  if (keyEl) keyEl.value = key;
-  
-  var fromEl = document.getElementById('f-resend-from');
-  if (fromEl) fromEl.value = from;
-  
+
   var provEl = document.getElementById('f-qtsp-provider');
   if (provEl) {
     provEl.value = prov;
@@ -1893,12 +1881,7 @@ function cargarAjustesResend() {
 }
 
 function guardarAjustesResend() {
-  var keyVal = document.getElementById('f-resend-key').value;
-  var fromVal = document.getElementById('f-resend-from').value || 'onboarding@resend.dev';
   var provVal = document.getElementById('f-qtsp-provider').value;
-  
-  localStorage.setItem('resend_api_key', keyVal);
-  localStorage.setItem('resend_from_email', fromVal);
   localStorage.setItem('qtsp_provider', provVal);
 }
 
@@ -1919,154 +1902,66 @@ async function enviarDocumentoPorEmail() {
   var solEmail = document.getElementById('f-sol-email').value;
   var reqNombre = document.getElementById('f-req-nombre').value.replace(/\s*\[Ejemplo\]/g, '');
   var reqEmail = document.getElementById('f-req-email').value;
-  var despachoEmail = document.getElementById('f-despacho-email').value;
   var conflicto = document.getElementById('f-conflicto').value.replace(/\s*\[Ejemplo\]/g, '');
-  
-  var apiKey = localStorage.getItem('resend_api_key') || '';
-  var fromEmail = localStorage.getItem('resend_from_email') || 'onboarding@resend.dev';
+
   var prov = localStorage.getItem('qtsp_provider') || 'Lleida.net';
-  
+
   if (prov !== 'resend') {
     alert("Envío certificado simulado con éxito mediante " + prov + ".");
     V('detalle');
     return;
   }
-  
-  if (!apiKey) {
-    alert("Para enviar correos reales con Resend, introduce tu API Key en la pestaña 'Ajustes'. Se simulará el envío por ahora.");
-    V('detalle');
-    return;
-  }
-  
+
   // Mostrar estado enviando
   var btn = document.getElementById('n-btn-confirmar') || document.querySelector('#v-notificar .btnacc');
   var origText = btn.innerHTML;
   btn.disabled = true;
   btn.innerHTML = '<i class="ti ti-loader" style="animation: spin 1.2s linear infinite; display: inline-block; margin-right: 6px;"></i> Enviando...';
-  
-  var emailBody = `
-    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); background-color: #ffffff;">
-      <div style="text-align: center; margin-bottom: 20px;">
-        <h2 style="color: #0f172a; margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.02em;">MASC Digital</h2>
-        <p style="color: #64748b; font-size: 13px; margin: 4px 0 0 0;">Notificación formal de mediación extrajudicial</p>
-      </div>
-      
-      <p style="font-size: 14px; color: #334155; line-height: 1.6;">Estimadas partes,</p>
-      <p style="font-size: 14px; color: #334155; line-height: 1.6;">Les notificamos el inicio formal de un expediente y reclamación en el marco de la mediación MASC (Medios Alternativos de Resolución de Conflictos) según la legislación vigente.</p>
-      
-      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin: 20px 0;">
-        <h3 style="margin: 0 0 12px 0; font-size: 14px; color: #0f172a; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">Datos del Expediente</h3>
-        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-          <tr>
-            <td style="padding: 4px 0; color: #64748b; width: 120px;"><strong>Referencia:</strong></td>
-            <td style="padding: 4px 0; color: #0f172a;"><strong>\${expId}</strong></td>
-          </tr>
-          <tr>
-            <td style="padding: 4px 0; color: #64748b;"><strong>Solicitante:</strong></td>
-            <td style="padding: 4px 0; color: #0f172a;">\${solNombre} (\${solEmail})</td>
-          </tr>
-          <tr>
-            <td style="padding: 4px 0; color: #64748b;"><strong>Requerido:</strong></td>
-            <td style="padding: 4px 0; color: #0f172a;">\${reqNombre} (\${reqEmail})</td>
-          </tr>
-          <tr>
-            <td style="padding: 4px 0; color: #64748b;"><strong>Despacho:</strong></td>
-            <td style="padding: 4px 0; color: #0f172a;">\${despachoEmail}</td>
-          </tr>
-        </table>
-        
-        <h4 style="margin: 14px 0 6px 0; font-size: 13px; color: #0f172a;">Descripción de la reclamación:</h4>
-        <p style="margin: 0; font-size: 12.5px; color: #475569; line-height: 1.5; background: #ffffff; border-left: 3px solid #2563eb; padding: 8px 12px; border-radius: 4px;">\${conflicto}</p>
-      </div>
-      
-      <p style="font-size: 13.5px; color: #334155; line-height: 1.6;">El expediente y documento vinculante correspondientes han sido certificados con valor probatorio. Pueden responder a esta notificación contactando directamente con el despacho de abogados en \${despachoEmail}.</p>
-      
-      <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;">
-      <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 0;">Remitido digitalmente a través de MASC Digital. Copia de registro en base de datos.</p>
-    </div>
-  `;
 
-  var recipients = [
-    { email: solEmail, role: 'Solicitante' },
-    { email: reqEmail, role: 'Requerido' },
-    { email: despachoEmail, role: 'Despacho' }
-  ];
-  
-  var successCount = 0;
-  var failDetails = [];
-  
-  for (var i = 0; i < recipients.length; i++) {
-    var rec = recipients[i];
-    if (!rec.email || rec.email.includes('***') || rec.email.trim() === '') continue;
-    
-    // Ignorar correos ficticios de ejemplo para evitar que Resend rebote toda la petición
-    if (rec.email.includes('ejemplo') || rec.email.includes('correo.com')) {
-      continue;
-    }
-    
-    try {
-      var url = 'https://api.resend.com/emails';
-      var sendPayload = {
-        from: fromEmail,
-        to: [rec.email],
-        subject: `Notificación MASC Digital - Expediente \${expId} (\${rec.role})`,
-        html: emailBody
-      };
-      
-      var proxies = [
-        'https://api.cors.lol/?url=' + encodeURIComponent(url),
-        'https://corsproxy.io/?url=' + encodeURIComponent(url),
-        'https://thingproxy.freeboard.io/fetch/' + url
-      ];
-      
-      var response = null;
-      var lastError = "";
-      
-      for (var p = 0; p < proxies.length; p++) {
-        try {
-          var proxyUrl = proxies[p];
-          response = await fetch(proxyUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + apiKey
-            },
-            body: JSON.stringify(sendPayload)
-          });
-          
-          if (response.ok) {
-            lastError = ""; // Clear errors on success
-            break;
-          } else {
-            var errText = "";
-            try { errText = await response.text(); } catch(e){}
-            lastError = "Proxy " + (p + 1) + " respondió " + response.status + ": " + errText;
-          }
-        } catch (fetchErr) {
-          lastError = "Proxy " + (p + 1) + " error de red: " + fetchErr.message;
+  try {
+    // El envío real se hace en la Edge Function 'enviar-notificacion': la
+    // clave de Resend vive solo en los secretos de Supabase, y el email del
+    // "despacho" se deriva de la sesión logada (JWT), no de un campo del
+    // formulario, para que no pueda ser manipulado desde el cliente.
+    var resp = await _supabase.functions.invoke('enviar-notificacion', {
+      body: {
+        expId: expId,
+        conflicto: conflicto,
+        solicitante: { nombre: solNombre, email: solEmail },
+        requerido: { nombre: reqNombre, email: reqEmail }
+      }
+    });
+
+    if (resp.error) {
+      // Igual que en redactarConIA: el mensaje real va en resp.error.context.
+      var detalle = '';
+      try {
+        if (resp.error.context && typeof resp.error.context.json === 'function') {
+          var cuerpo = await resp.error.context.json();
+          detalle = (cuerpo && cuerpo.error) || '';
         }
-      }
-      
-      if (response && response.ok) {
-        successCount++;
-      } else {
-        failDetails.push(rec.role + " (" + rec.email + "): " + (lastError || "Fallo de conexión en todos los servidores proxy"));
-      }
-    } catch (err) {
-      failDetails.push(rec.role + " (" + rec.email + "): " + err.message);
+      } catch (e2) { /* el cuerpo no era JSON parseable */ }
+      throw new Error(detalle || resp.error.message || 'Error al enviar las notificaciones por email.');
     }
-  }
-  
-  if (successCount > 0) {
-    var msg = "¡Se enviaron " + successCount + " correo(s) con éxito mediante la API de Resend!";
-    if (failDetails.length > 0) {
-      msg += "\n\nAlgunos envíos fallaron (por ejemplo, si tu cuenta de Resend está en modo Sandbox y no tiene esos correos de prueba verificados):\n" + failDetails.join('\n');
+
+    var data = resp.data || {};
+    var enviados = data.enviados || [];
+    var fallidos = data.fallidos || [];
+
+    if (enviados.length > 0) {
+      var msg = "Se enviaron " + enviados.length + " correo(s) con éxito mediante Resend:\n" + enviados.join('\n');
+      if (fallidos.length > 0) {
+        msg += "\n\nAlgunos envíos fallaron:\n" + fallidos.map(function (f) { return f.rol + " (" + f.email + "): " + f.motivo; }).join('\n');
+      }
+      alert(msg);
+    } else {
+      var detalleFallos = fallidos.map(function (f) { return f.rol + " (" + f.email + "): " + f.motivo; }).join('\n');
+      alert("No se pudo enviar ningún correo real mediante Resend.\nDetalles:\n" + (detalleFallos || "No se detectaron destinatarios reales."));
     }
-    alert(msg);
-  } else {
-    alert("No se pudo enviar ningún correo real mediante Resend.\nDetalles:\n" + (failDetails.join('\n') || "No se detectaron destinatarios reales.") + "\n\nNota importante: Si estás usando una cuenta Sandbox de Resend:\n1. El remitente (From) en Ajustes DEBE ser exactamente 'onboarding@resend.dev'.\n2. El destinatario real en el formulario debe ser exactamente el mismo email con el que te registraste en Resend (el resto serán ignorados o rebotados por Resend).");
+  } catch (err) {
+    alert("No se ha podido enviar la notificación por email: " + err.message);
   }
-  
+
   btn.disabled = false;
   btn.innerHTML = origText;
   V('detalle');
